@@ -25,7 +25,6 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -59,10 +58,53 @@ button:focus-visible {
 }
 
 #app {
-  max-width: 1280px;
+  width: 100%;
+  max-width: 700px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.label {
+  width: 100%;
+  cursor: pointer;
+}
+
+.row,
+.column {
+  display: flex;
+  gap: 4px;
+
+  .label {
+    text-align: left;
+  }
+}
+
+.row {
+  align-items: center;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.required {
+  color: red;
+}
+
+ul {
+  padding: var(--p-tabs-tabpanel-padding);
+  margin: 0;
+
+  li {
+    text-align: left;
+  }
 }
 
 @media (prefers-color-scheme: light) {
