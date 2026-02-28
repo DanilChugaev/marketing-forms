@@ -2,14 +2,14 @@ import { z } from 'zod';
 
 export const creativesFormSchema = z.object({
   webhookUrl: z.string().url({ message: 'Некорректная ссылка на вебхук' }),
-  companyName: z.string().min(1, { message: 'Название компании не может быть пустым' }),
-  creativeTheme: z.string().min(1, { message: 'Тематика креатива не может быть пустой' }),
-  keyMessage: z.string().min(1, { message: 'УТП или ключевое сообщение не может быть пустым' }),
-  targetGender: z.array(z.string()).min(1, { message: 'Выберите хотя бы один пол' }),
-  targetAge: z.array(z.string()).min(1, { message: 'Выберите хотя бы один возраст' }),
-  creativeStyles: z.array(z.string()).min(1, { message: 'Выберите хотя бы один стиль креатива' }),
-  colorSchemes: z.array(z.string()).min(1, { message: 'Выберите хотя бы одну цветовую схему' }),
-  creativeSizes: z.array(z.string()).min(1, { message: 'Выберите хотя бы один размер креатива' }),
+  campaignName: z.string().min(1, { message: 'Название кампании не может быть пустым' }),
+  theme: z.string().min(1, { message: 'Тематика креатива не может быть пустой' }),
+  usp: z.string().min(1, { message: 'УТП или ключевое сообщение не может быть пустым' }),
+  audienceGender: z.array(z.string()).min(1, { message: 'Выберите хотя бы один пол' }),
+  audienceAge: z.array(z.string()).min(1, { message: 'Выберите хотя бы один возраст' }),
+  style: z.array(z.string()).min(1, { message: 'Выберите хотя бы один стиль креатива' }),
+  colors: z.array(z.string()).min(1, { message: 'Выберите хотя бы одну цветовую схему' }),
+  format: z.array(z.string()).min(1, { message: 'Выберите хотя бы один размер креатива' }),
 });
 
 export const semanticsFormSchema = z.object({
