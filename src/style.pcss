@@ -32,6 +32,11 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  margin-top: 0;
+
+  @media (max-width: 499px) {
+    font-size: 2rem;
+  }
 }
 
 button {
@@ -61,8 +66,12 @@ button:focus-visible {
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--p-tabs-tabpanel-padding);
   text-align: center;
+
+  @media (max-width: 499px) {
+    padding: 0;
+  }
 }
 
 .form {

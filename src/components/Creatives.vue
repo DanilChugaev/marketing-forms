@@ -12,17 +12,17 @@
 
     <div class="column">
       <label class="label" for="companyName">Название компании<sup class="required">*</sup></label>
-      <InputText id="companyName" v-model="companyName" placeholder="Введите название компании" required />
+      <InputText id="companyName" v-model="formData.companyName" placeholder="Введите название компании" required />
     </div>
 
     <div class="column">
       <label class="label" for="creativeTheme">Тематика креатива<sup class="required">*</sup></label>
-      <InputText id="creativeTheme" v-model="creativeTheme" placeholder="Введите тематику креатива" required />
+      <InputText id="creativeTheme" v-model="formData.creativeTheme" placeholder="Введите тематику креатива" required />
     </div>
 
     <div class="column">
       <label class="label" for="keyMessage">УТП / Ключевое сообщение<sup class="required">*</sup></label>
-      <InputText id="keyMessage" v-model="keyMessage" placeholder="Введите ключевое сообщение" required />
+      <InputText id="keyMessage" v-model="formData.keyMessage" placeholder="Введите ключевое сообщение" required />
     </div>
 
     <div class="column">
@@ -100,7 +100,7 @@
 
     <div class="column">
       <label class="label" for="additionalWishes">Дополнительные пожелания</label>
-      <InputText id="additionalWishes" v-model="additionalWishes" placeholder="Введите пожелания" />
+      <InputText id="additionalWishes" v-model="formData.additionalWishes" placeholder="Введите пожелания" />
     </div>
 
     <ul v-if="errorMessages.length">
@@ -122,17 +122,13 @@ import Button from 'primevue/button';
 import { creativesFormSchema } from '../utils/validation.ts';
 
 const webhookUrl = useStorage('creative-webhook-url', '');
-const companyName = useStorage('creative-company-name', '');
-const creativeTheme = useStorage('creative-creative-theme', '');
-const keyMessage = useStorage('creative-key-message', '');
 const diskLink = useStorage('creative-disk-link', '');
-const additionalWishes = useStorage('creative-additional-wishes', '');
 
 const formData = reactive({
   webhookUrl: webhookUrl.value,
-  companyName: companyName.value,
-  creativeTheme: creativeTheme.value,
-  keyMessage: keyMessage.value,
+  companyName: '',
+  creativeTheme: '',
+  keyMessage: '',
   targetGender: [],
   targetAge: [],
   creativeStyles: [],
@@ -142,7 +138,7 @@ const formData = reactive({
   customColorScheme: '',
   creativeSizes: [],
   diskLink: diskLink.value,
-  additionalWishes: additionalWishes.value,
+  additionalWishes: '',
 })
 
 const errorMessages = ref([]);
