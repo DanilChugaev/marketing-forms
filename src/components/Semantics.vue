@@ -6,6 +6,11 @@
     </div>
 
     <div class="column">
+      <label class="label" for="webhookUrl">Ссылка на вебхук<sup class="required">*</sup></label>
+      <InputText id="webhookUrl" v-model="webhookUrl" required />
+    </div>
+
+    <div class="column">
       <label class="label" for="parsePhrases">Введите фразы для парсинга (каждый запрос с новой строки)<sup class="required">*</sup></label>
       <Textarea id="parsePhrases" v-model="formData.parsePhrases" required auto-resize/>
     </div>
@@ -76,6 +81,7 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
+import {useStorage} from '@vueuse/core';
 import Textarea from 'primevue/textarea';
 import TreeSelect from 'primevue/treeselect';
 import RadioButton from 'primevue/radiobutton';
@@ -83,7 +89,10 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import { semanticsFormSchema } from '../utils/validation.ts';
 
+const webhookUrl = useStorage('semantics-webhook-url', '');
+
 const formData = reactive({
+  webhookUrl: webhookUrl.value,
   parsePhrases: '',
   negativePhrases: '',
   regions: [],

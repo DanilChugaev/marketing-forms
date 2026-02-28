@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const creativesFormSchema = z.object({
-  webhookUrl: z.string().url(),
+  webhookUrl: z.string().url({ message: 'Некорректная ссылка на вебхук' }),
   companyName: z.string().min(1, { message: 'Название компании не может быть пустым' }),
   creativeTheme: z.string().min(1, { message: 'Тематика креатива не может быть пустой' }),
   keyMessage: z.string().min(1, { message: 'УТП или ключевое сообщение не может быть пустым' }),
@@ -13,6 +13,7 @@ export const creativesFormSchema = z.object({
 });
 
 export const semanticsFormSchema = z.object({
+  webhookUrl: z.string().url({ message: 'Некорректная ссылка на вебхук' }),
   parsePhrases: z.string().min(1, { message: 'Введите хотя бы одну фразу для парсинга' }),
   includeMasks: z.enum(['yes', 'no'], { message: 'Выберите, добавлять ли маски в проект' }),
   clusterPhrases: z.enum(['yes', 'no'], { message: 'Выберите, кластеризовать ли фразы' }),
