@@ -109,7 +109,7 @@
       </li>
     </ul>
 
-    <Button @click="submitForm">Отправить</Button>
+    <Button :loading="isSendingFormData" @click="submitForm">Отправить</Button>
   </div>
 </template>
 
@@ -147,6 +147,7 @@ const formData = reactive({
 })
 
 const errorMessages = ref([]);
+const isSendingFormData = ref(false);
 
 const audienceGenderOptions = [
   { value: 'female', label: 'Женщины' },
@@ -211,6 +212,8 @@ async function submitForm() {
     return;
   }
 
+  isSendingFormData.value = true;
+
   const { error, data } = await useFetch(webhookUrl.value)
       .post({
         campaignName: formData.campaignName,
@@ -229,15 +232,13 @@ async function submitForm() {
   if (data.value && data.value.success) {
     successNotify(data.value.message || 'Данные отправлены успешно');
     clearForm();
-    return;
-  }
-
-  if (error.value) {
+  } else if (error.value) {
     errorNotify(error.value);
-    return;
+  } else {
+    errorNotify('Неизвестная ошибка, попробуйте позже');
   }
 
-  errorNotify('Неизвестная ошибка, попробуйте позже');
+  isSendingFormData.value = false;
 }
 
 function clearForm() {
