@@ -29,7 +29,7 @@ import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Label from './Label.vue';
 
-const model = defineModel<string | number>();
+const model = defineModel<any>();
 
 withDefaults(
   defineProps<{
