@@ -3,13 +3,13 @@ import { z } from 'zod';
 export const creativesFormSchema = z.object({
   webhookUrl: z.string().url({ message: 'Некорректная ссылка на вебхук' }),
   campaignName: z.string().min(1, { message: 'Название кампании не может быть пустым' }),
-  theme: z.string().min(1, { message: 'Тематика креатива не может быть пустой' }),
+  creativeTheme: z.string().min(1, { message: 'Тематика креатива не может быть пустой' }),
+  subjects: z.array(z.string()).min(1, { message: 'Выберите хотя бы одно значение' }),
   usp: z.string().min(1, { message: 'УТП или ключевое сообщение не может быть пустым' }),
-  audienceGender: z.array(z.string()).min(1, { message: 'Выберите хотя бы один пол' }),
-  audienceAge: z.array(z.string()).min(1, { message: 'Выберите хотя бы один возраст' }),
-  style: z.array(z.string()).min(1, { message: 'Выберите хотя бы один стиль креатива' }),
-  colors: z.array(z.string()).min(1, { message: 'Выберите хотя бы одну цветовую схему' }),
-  format: z.array(z.string()).min(1, { message: 'Выберите хотя бы один размер креатива' }),
+  gender: z.array(z.string()).min(1, { message: 'Выберите хотя бы один пол' }),
+  age: z.string().min(1, { message: 'Выберите хотя бы один возраст' }),
+  mainElement: z.string().min(1, { message: 'Основной элемент не может быть пустым' }),
+  // блок с брендовыми цветами
 });
 
 export const semanticsFormSchema = z.object({

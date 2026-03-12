@@ -1,9 +1,10 @@
 import { createApp } from 'vue';
-import './style.pcss';
 import App from './App.vue';
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import ToastService from 'primevue/toastservice';
+import './styles/main.pcss';
+import './styles/form.pcss';
 
 const app = createApp(App);
 

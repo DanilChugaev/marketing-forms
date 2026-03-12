@@ -1,0 +1,43 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  --bg-color: #242424;
+  --text-color: #fff;
+
+  color-scheme: light dark;
+  background-color: var(--bg-color);
+  color: vaR(--text-color);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#app {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: var(--p-tabs-tabpanel-padding);
+  text-align: center;
+
+  @media (max-width: 499px) {
+    padding: 0;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --text-color: #213547;
+    --bg-color: #efefef;
+  }
+}

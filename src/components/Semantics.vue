@@ -1,40 +1,38 @@
 <template>
   <div class="form">
-    <div class="row">
-      <span class="required">*</span>
-      <span>Обязательные поля</span>
-    </div>
+    <RequiredInfo />
 
-    <div class="column">
-      <label class="label" for="webhookUrl">Ссылка на вебхук<sup class="required">*</sup></label>
-      <InputText id="webhookUrl" v-model="webhookUrl" required />
-    </div>
+    <Text
+        v-model="webhookUrl"
+        id="webhookUrl"
+        label="Ссылка на вебхук"
+        required
+    />
 
-    <div class="column">
-      <label class="label" for="parsePhrases">Введите фразы для парсинга (каждый запрос с новой строки)<sup class="required">*</sup></label>
-      <Textarea id="parsePhrases" v-model="formData.parsePhrases" required auto-resize/>
-    </div>
+    <Text
+        v-model="formData.parsePhrases"
+        id="parsePhrases"
+        label="Введите фразы для парсинга"
+        description="Каждый запрос с новой строки"
+        type="textarea"
+        required
+    />
 
-    <div class="column">
-      <label class="label" for="negativePhrases">Введите минус-фразы (каждая фраза с новой строки)</label>
-      <Textarea id="negativePhrases" v-model="formData.negativePhrases" auto-resize/>
-    </div>
+    <Text
+        v-model="formData.negativePhrases"
+        id="negativePhrases"
+        label="Введите минус-фразы"
+        description="Каждая фраза с новой строки"
+        type="textarea"
+    />
 
-    <div class="column">
-      <label for="regions" class="label">Выберите регион</label>
-      <TreeSelect
-          v-model="formData.regions"
-          :options="yandexDirectRegions"
-          placeholder="Выберите регион"
-          filter
-          filterPlaceholder="Поиск по названию региона..."
-          showClear
-          inputId="regions"
-          :selection-mode="'multiple'"
-          :virtual-scroller-options="{ itemSize: 38 }"
-          class="w-full"
-      />
-    </div>
+    <Select
+        v-model="formData.regions"
+        id="regions"
+        label="Регион"
+        placeholder="Выберите регион"
+        :options="yandexDirectRegions"
+    />
 
     <div class="column">
       <div class="label">Добавлять исходные маски в проект?<sup class="required">*</sup></div>
@@ -50,10 +48,13 @@
       </div>
     </div>
 
-    <div class="column">
-      <label for="baseFrequency" class="label">Собрать до базовой частоты (введите число или оставьте пустым)</label>
-      <InputText id="baseFrequency" v-model.number="formData.baseFrequency" type="number" />
-    </div>
+    <Text
+        v-model.number="formData.baseFrequency"
+        id="baseFrequency"
+        label="Собрать до базовой частоты"
+        placeholder="Введите число или оставьте пустым"
+        type="number"
+    />
 
     <div class="column">
       <div class="label">Требуется кластеризация фраз?<sup class="required">*</sup></div>
@@ -69,11 +70,7 @@
       </div>
     </div>
 
-    <ul v-if="errorMessages.length">
-      <li v-for="message in errorMessages" :key="message" class="required">
-        {{ message }}
-      </li>
-    </ul>
+    <Errors :messages="errorMessages" />
 
     <Button @click="submitForm">Отправить</Button>
   </div>
@@ -82,22 +79,22 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import {useStorage} from '@vueuse/core';
-import Textarea from 'primevue/textarea';
-import TreeSelect from 'primevue/treeselect';
 import RadioButton from 'primevue/radiobutton';
-import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import { semanticsFormSchema } from '../utils/validation.ts';
+import RequiredInfo from './Fields/RequiredInfo.vue';
+import Errors from './Fields/Errors.vue';
+import Text from './Fields/Text.vue';
+import Select from './Fields/Select.vue';
 
 const webhookUrl = useStorage('semantics-webhook-url', '');
 
 const formData = reactive({
-  webhookUrl: webhookUrl.value,
   parsePhrases: '',
   negativePhrases: '',
   regions: [],
   includeMasks: '',
-  baseFrequency: null,
+  baseFrequency: undefined,
   clusterPhrases: '',
 })
 
@@ -280,8 +277,10 @@ const yandexDirectRegions = [
 
 async function submitForm() {
   try {
-    await semanticsFormSchema.parseAsync(formData);
-    console.log('Форма валидна:', formData);
+    await semanticsFormSchema.parseAsync({
+      webhookUrl: webhookUrl.value,
+      ...formData,
+    });
   } catch (error: any) {
     errorMessages.value = error.issues.map((issue: { message: string }) => issue.message);
     console.error('Ошибка валидации:', error.issues);
