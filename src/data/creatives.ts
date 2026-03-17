@@ -17,7 +17,7 @@ export const formatOptions: LabelValuePair[] = [
   { value: '940x640', label: '940x640 (ГО мобилки)' },
 ];
 
-export const subjects: TreeNode[] = [
+export const subjectsOptions: TreeNode[] = [
   { key: 'all', label: 'Без уточнения предмета' },
   { key: 'physics', label: 'Физика' },
   { key: 'biology', label: 'Биология' },
@@ -34,7 +34,7 @@ export const subjects: TreeNode[] = [
   { key: 'mathematics', label: 'Математика' },
 ];
 
-export const audienceGenderOptions: LabelValuePair[] = [
+export const genderOptions: LabelValuePair[] = [
   { value: 'female', label: 'Женщины' },
   { value: 'male', label: 'Мужчины' },
 ];

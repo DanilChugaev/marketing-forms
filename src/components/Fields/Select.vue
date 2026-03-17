@@ -24,7 +24,7 @@ import TreeSelect from 'primevue/treeselect';
 import Label from './Label.vue';
 import type {TreeNode} from 'primevue/treenode';
 
-const model = defineModel<string[]>();
+const model = defineModel();
 
 defineProps<{
   id: string;

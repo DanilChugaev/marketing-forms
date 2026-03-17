@@ -14,14 +14,14 @@
     <Separator text="Аудитория и таргеты"/>
 
     <Text
-        v-model="formData.campaignName"
+        v-model="campaignName"
         id="campaignName"
         label="Название кампании"
         required
     />
 
     <Text
-        v-model="formData.creativeTheme"
+        v-model="creativeTheme"
         id="creativeTheme"
         label="Тематика креатива"
         placeholder="Пример: подготовка к ЕГЭ с нуля"
@@ -29,17 +29,17 @@
     />
 
     <Select
-        v-model="formData.subjects"
+        v-model="subjects"
         id="subjects"
         label="Предмет(ы)"
         placeholder="Выберите предмет(ы)"
-        :options="subjects"
+        :options="subjectsOptions"
         description="При выборе предмета автоматически подставляются брендовые цвета в блок с брендовыми цветами"
         required
     />
 
     <Text
-        v-model="formData.usp"
+        v-model="usp"
         id="usp"
         label="УТП / Ключевое сообщение"
         placeholder="Пример: поможем подготовиться к ЕГЭ или ОГЭ даже с нулевого уровня до высоких баллов"
@@ -49,14 +49,14 @@
     />
 
     <Checkboxes
-        v-model="formData.gender"
+        v-model="gender"
         label="Целевая аудитория (пол)"
-        :options="audienceGenderOptions"
+        :options="genderOptions"
         required
     />
 
     <Text
-        v-model="formData.age"
+        v-model="age"
         id="age"
         label="Целевая аудитория (возраст)"
         type="number"
@@ -66,7 +66,7 @@
     <Separator text="Элементы креатива"/>
 
     <Text
-        v-model="formData.mainElement"
+        v-model="mainElement"
         id="mainElement"
         label="Основной элемент"
         placeholder="Пример: девушка с учебниками в руках, прижимает их к себе, улыбается"
@@ -76,7 +76,7 @@
     />
 
     <Text
-        v-model="formData.secondElement"
+        v-model="secondElement"
         id="secondElement"
         label="Вторичный элемент(ы) (не будет добавлен, если пусто)"
         placeholder="Пример: иконки книги, звездочек, график вверх"
@@ -85,21 +85,21 @@
     />
 
     <Text
-        v-model="formData.title"
+        v-model="title"
         id="title"
         label="Заголовок (не будет добавлен, если пусто)"
         placeholder="Пример: Подготовка к ЕГЭ на 80+ баллов!"
     />
 
     <Text
-        v-model="formData.subTitle"
+        v-model="subTitle"
         id="subTitle"
         label="Подзаголовок (не будет добавлен, если пусто)"
         placeholder="Пример: Эффективная подготовка за 2 месяца!"
     />
 
     <Text
-        v-model="formData.buttonText"
+        v-model="buttonText"
         id="buttonText"
         label="Текст кнопки (не будет добавлена, если пусто)"
         placeholder="Пример: Записаться на урок"
@@ -110,14 +110,14 @@
 <!--    блок с брендовыми цветами-->
 
     <Text
-        v-model="formData.font"
+        v-model="font"
         id="font"
         label="Шрифт для текстовых элементов"
         description="Предопределен, но его можно заменить. При новой генерации возвращаться к первоначальным заданным значениям"
     />
 
     <Text
-        v-model="formData.style"
+        v-model="style"
         id="style"
         label="Стиль"
         placeholder="Пример: современный, детский, яркий, минимализм, деловой, HDR-реализм"
@@ -125,7 +125,7 @@
     />
 
     <Text
-        v-model="formData.background"
+        v-model="background"
         id="background"
         label="Фон"
         placeholder="Пример: светлый, градиент от нежно голубого к солнечно-желтому"
@@ -135,13 +135,13 @@
     <Separator text="Дополнительно"/>
 
     <Upload
-        v-model="formData.photo"
+        v-model="photo"
         id="photo"
         label="Фото для примера"
     />
 
     <Text
-        v-model="formData.comments"
+        v-model="comments"
         id="comments"
         label="Пожелания"
         type="textarea"
@@ -154,56 +154,68 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useStorage, useFetch } from '@vueuse/core'
 import Button from 'primevue/button';
 import { creativesFormSchema } from '../utils/validation.ts';
-import {useNotifications} from '../composables/useNotification.ts';
+import { useNotifications } from '../composables/useNotification.ts';
 import RequiredInfo from './Fields/RequiredInfo.vue';
 import Text from './Fields/Text.vue';
 import Errors from './Fields/Errors.vue';
 import Select from './Fields/Select.vue';
-import {audienceGenderOptions, subjects} from '../data/creatives.ts';
+import { genderOptions, subjectsOptions } from '../data/creatives.ts';
 import Checkboxes from './Fields/Checkboxes.vue';
 import Separator from './Fields/Separator.vue';
-import type {CreativesFormData} from '../types.ts';
 import Upload from './Fields/Upload.vue';
 
 const { successNotify, errorNotify } = useNotifications();
 
 const webhookUrl = useStorage('creative-webhook-url', '');
+const campaignName = useStorage('creative-campaign-name', '');
+const creativeTheme = useStorage('creative-creative-theme', '');
+const subjects = useStorage<Record<string, any>>('creative-subjects', {});
+const usp = useStorage('creative-usp', '');
+const gender = useStorage('creative-gender', []);
+const age = useStorage('creative-age', undefined);
+const mainElement = useStorage('creative-main-element', '');
+const secondElement = useStorage('creative-second-element', '');
+const title = useStorage('creative-title', '');
+const subTitle = useStorage('creative-subTitle', '');
+const buttonText = useStorage('creative-buttonText', '');
+const style = useStorage('creative-style', '');
+const background = useStorage('creative-background', '');
+const photo = useStorage('creative-photo', '');
+const comments = useStorage('creative-comments', '');
 
 const defaultFont = 'CoFo Gothic Trial';
-const defaultFormData: CreativesFormData = {
-  campaignName: '',       // название кампании
-  creativeTheme: '',      // тематика креатива
-  subjects: [],           // предмет(ы)
-  usp: '',                // УТП / Ключевое сообщение
-  gender: [],             // пол
-  age: undefined,         // возраст
-  mainElement: '',        // основной элемент
-  secondElement: '',      // вторичный элемент
-  title: '',              // заголовок
-  subTitle: '',           // подзаголовок
-  buttonText: '',         // текст кнопки
-  // блок с брендовыми цветами
-  font: defaultFont,      // шрифт для текстовых элементов
-  style: '',              // стиль
-  background: '',         // фон
-  photo: '',              // фото для примера
-  comments: '',
-}
 
-const formData = reactive({...defaultFormData})
-
+const font = ref(defaultFont);
 const errorMessages = ref([]);
 const isSendingFormData = ref(false);
 
 async function submitForm() {
   errorMessages.value = [];
+
+  const subjectsKeys = Object.keys(subjects.value);
+
   const payload = {
-    ...formData,
-    subjects: Object.keys(formData.subjects)
+    campaignName: campaignName.value,       // название кампании
+    creativeTheme: creativeTheme.value,      // тематика креатива
+    usp: usp.value,                // УТП / Ключевое сообщение
+    age: age.value,         // возраст
+    mainElement: mainElement.value,        // основной элемент
+    secondElement: secondElement.value,      // вторичный элемент
+    title: title.value,              // заголовок
+    subTitle: subTitle.value,           // подзаголовок
+    buttonText: buttonText.value,         // текст кнопки
+    // блок с брендовыми цветами
+    font: font.value,      // шрифт для текстовых элементов
+    style: style.value,              // стиль
+    background: background.value,         // фон
+    photo: photo.value,              // фото для примера
+    comments: comments.value,
+    subjects: subjectsKeys.includes('all') ? [''] : subjectsKeys, // предмет(ы)
+    gender: gender.value.length === 2 ? [''] : gender.value, // пол
   }
 
   try {
@@ -226,7 +238,6 @@ async function submitForm() {
 
   if (data.value && data.value.success) {
     successNotify(data.value.message || 'Данные отправлены успешно');
-    clearForm();
   } else if (error.value) {
     errorNotify(error.value);
   } else {
@@ -236,7 +247,21 @@ async function submitForm() {
   isSendingFormData.value = false;
 }
 
-function clearForm() {
-  Object.assign(formData, { ...defaultFormData });
-}
+watch(() => subjects.value, (currentValue, oldValue) => {
+  const currentKeys = Object.keys(currentValue);
+  const oldKeys = Object.keys(oldValue);
+
+  if (
+      currentKeys.length > 1
+      && currentKeys.includes('all')
+      && oldKeys.includes('all')
+      && oldKeys.length < currentKeys.length
+  ) {
+    delete subjects.value.all
+  } else if (currentKeys.length > oldKeys.length && currentKeys.includes('all')) {
+    subjects.value = {
+      all: subjects.value.all,
+    }
+  }
+})
 </script>
