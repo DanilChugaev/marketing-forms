@@ -19,24 +19,24 @@ export const formatOptions: LabelValuePair[] = [
 
 export const subjectOptions: TreeNode[] = [
   { key: 'all', label: 'Без уточнения предмета' },
-  { key: 'physics', label: 'Физика' },
-  { key: 'biology', label: 'Биология' },
-  { key: 'chemistry', label: 'Химия' },
-  { key: 'geography', label: 'География' },
-  { key: 'german', label: 'Немецкий' },
-  { key: 'history', label: 'История' },
-  { key: 'english', label: 'Английский' },
-  { key: 'russian', label: 'Русский' },
-  { key: 'literature', label: 'Литература' },
-  { key: 'social-science', label: 'Обществознание' },
-  { key: 'informatics', label: 'Информатика' },
-  { key: 'base', label: 'База' },
-  { key: 'mathematics', label: 'Математика' },
+  { key: 'Физика', label: 'Физика' },
+  { key: 'Биология', label: 'Биология' },
+  { key: 'Химия', label: 'Химия' },
+  { key: 'География', label: 'География' },
+  { key: 'Немецкий', label: 'Немецкий' },
+  { key: 'История', label: 'История' },
+  { key: 'Английский', label: 'Английский' },
+  { key: 'Русский', label: 'Русский' },
+  { key: 'Литература', label: 'Литература' },
+  { key: 'Обществознание-science', label: 'Обществознание' },
+  { key: 'Информатика', label: 'Информатика' },
+  { key: 'База', label: 'База' },
+  { key: 'Математика', label: 'Математика' },
 ];
 
 export const genderOptions: LabelValuePair[] = [
-  { value: 'female', label: 'Женщины' },
-  { value: 'male', label: 'Мужчины' },
+  { value: 'мужской', label: 'Мужчины' },
+  { value: 'женский', label: 'Женщины' },
 ];
 
 export const brandBackgroundOptions: Record<string, string> = {

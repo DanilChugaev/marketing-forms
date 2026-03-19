@@ -161,7 +161,7 @@
 
     <Errors :messages="errorMessages" />
 
-    <Button :loading="isSendingFormData" @click="submitForm">Отправить</Button>
+    <Button :loading="isSendingFormData" @click="submitForm">{{ isSendingFormData ? 'Идет обработка...' : 'Отправить' }}</Button>
   </div>
 </template>
 
@@ -216,7 +216,9 @@ async function submitForm() {
   const subjectValue = subjectKey.value === 'all' ? '' : subjectKey.value;
   let genderValue = '';
 
-  if (gender.value.length === 1) {
+  if (gender.value.length > 1) {
+    genderValue = `${genderOptions[0]!.value}, ${genderOptions[1]!.value}`;
+  } else {
     genderValue = gender.value[0] ?? '';
   }
 
