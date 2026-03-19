@@ -9,6 +9,7 @@
         :required
         :placeholder
         :type
+        :disabled
     />
 
     <Textarea
@@ -36,6 +37,7 @@ withDefaults(
     id: string;
     label: string;
     required?: boolean;
+    disabled?: boolean;
     placeholder?: string;
     description?: string;
     type?: 'text' | 'number' | 'textarea';

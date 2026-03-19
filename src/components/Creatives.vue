@@ -29,11 +29,11 @@
     />
 
     <Select
-        v-model="subjects"
-        id="subjects"
-        label="Предмет(ы)"
-        placeholder="Выберите предмет(ы)"
-        :options="subjectsOptions"
+        v-model="subject"
+        id="subject"
+        label="Предмет"
+        placeholder="Выберите предмет"
+        :options="subjectOptions"
         description="При выборе предмета автоматически подставляются брендовые цвета в блок с брендовыми цветами"
         required
     />
@@ -107,7 +107,19 @@
 
     <Separator text="Цвета и стиль"/>
 
-<!--    блок с брендовыми цветами-->
+    <Text
+        :model-value="brandBackground"
+        id="brandBackground"
+        label="Брендовый цвет фона"
+        disabled
+    />
+
+    <Text
+        :model-value="brandIllustrations"
+        id="brandIllustrations"
+        label="Брендовый цвет иллюстрации"
+        disabled
+    />
 
     <Text
         v-model="font"
@@ -154,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useStorage, useFetch } from '@vueuse/core'
 import Button from 'primevue/button';
 import { creativesFormSchema } from '../utils/validation.ts';
@@ -163,17 +175,18 @@ import RequiredInfo from './Fields/RequiredInfo.vue';
 import Text from './Fields/Text.vue';
 import Errors from './Fields/Errors.vue';
 import Select from './Fields/Select.vue';
-import { genderOptions, subjectsOptions } from '../data/creatives.ts';
+import { brandBackgroundOptions, brandIllustrationsOptions, genderOptions, subjectOptions } from '../data/creatives.ts';
 import Checkboxes from './Fields/Checkboxes.vue';
 import Separator from './Fields/Separator.vue';
 import Upload from './Fields/Upload.vue';
+import type { CreativesFormData } from '../types.ts';
 
 const { successNotify, errorNotify } = useNotifications();
 
 const webhookUrl = useStorage('creative-webhook-url', '');
 const campaignName = useStorage('creative-campaign-name', '');
 const creativeTheme = useStorage('creative-creative-theme', '');
-const subjects = useStorage<Record<string, any>>('creative-subjects', {});
+const subject = useStorage<Record<string, any>>('creative-subject', {});
 const usp = useStorage('creative-usp', '');
 const gender = useStorage('creative-gender', []);
 const age = useStorage('creative-age', undefined);
@@ -193,29 +206,39 @@ const font = ref(defaultFont);
 const errorMessages = ref([]);
 const isSendingFormData = ref(false);
 
+const subjectKey = computed<string>(() => Object.keys(subject.value ?? {})[0] ?? '');
+const brandBackground = computed<string>(() => brandBackgroundOptions[subjectKey.value] ?? '');
+const brandIllustrations = computed<string>(() => brandIllustrationsOptions[subjectKey.value] ?? '');
+
 async function submitForm() {
   errorMessages.value = [];
 
-  const subjectsKeys = Object.keys(subjects.value);
+  const subjectValue = subjectKey.value === 'all' ? '' : subjectKey.value;
+  let genderValue = '';
 
-  const payload = {
-    campaignName: campaignName.value,       // название кампании
-    creativeTheme: creativeTheme.value,      // тематика креатива
-    usp: usp.value,                // УТП / Ключевое сообщение
-    age: age.value,         // возраст
-    mainElement: mainElement.value,        // основной элемент
-    secondElement: secondElement.value,      // вторичный элемент
-    title: title.value,              // заголовок
-    subTitle: subTitle.value,           // подзаголовок
-    buttonText: buttonText.value,         // текст кнопки
-    // блок с брендовыми цветами
-    font: font.value,      // шрифт для текстовых элементов
-    style: style.value,              // стиль
-    background: background.value,         // фон
-    photo: photo.value,              // фото для примера
-    comments: comments.value,
-    subjects: subjectsKeys.includes('all') ? [''] : subjectsKeys, // предмет(ы)
-    gender: gender.value.length === 2 ? [''] : gender.value, // пол
+  if (gender.value.length === 1) {
+    genderValue = gender.value[0] ?? '';
+  }
+
+  const payload: CreativesFormData = {
+    campaignName: campaignName.value,             // название кампании
+    creativeTheme: creativeTheme.value,           // тематика креатива
+    usp: usp.value,                               // УТП / Ключевое сообщение
+    age: age.value,                               // возраст
+    mainElement: mainElement.value,               // основной элемент
+    secondElement: secondElement.value,           // вторичный элемент
+    title: title.value,                           // заголовок
+    subTitle: subTitle.value,                     // подзаголовок
+    buttonText: buttonText.value,                 // текст кнопки
+    brandBackground: brandBackground.value,       // брендовый цвет фона
+    brandIllustrations: brandIllustrations.value, // брендовый цвет иллюстрации
+    font: font.value,                             // шрифт для текстовых элементов
+    style: style.value,                           // стиль
+    background: background.value,                 // фон
+    photo: photo.value,                           // фото для примера
+    comments: comments.value,                     // пожелания
+    subject: subjectValue,                        // предмет
+    gender: genderValue,                          // пол
   }
 
   try {
@@ -246,22 +269,4 @@ async function submitForm() {
 
   isSendingFormData.value = false;
 }
-
-watch(() => subjects.value, (currentValue, oldValue) => {
-  const currentKeys = Object.keys(currentValue);
-  const oldKeys = Object.keys(oldValue);
-
-  if (
-      currentKeys.length > 1
-      && currentKeys.includes('all')
-      && oldKeys.includes('all')
-      && oldKeys.length < currentKeys.length
-  ) {
-    delete subjects.value.all
-  } else if (currentKeys.length > oldKeys.length && currentKeys.includes('all')) {
-    subjects.value = {
-      all: subjects.value.all,
-    }
-  }
-})
 </script>

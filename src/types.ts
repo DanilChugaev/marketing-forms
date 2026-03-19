@@ -6,9 +6,9 @@ export interface LabelValuePair {
 export interface CreativesFormData {
   campaignName: string;         // Название кампании
   creativeTheme: string;        // Тематика креатива
-  subjects: string[];           // Предмет(ы)
+  subject: string;              // Предмет
   usp: string;                  // УТП / Ключевое сообщение
-  gender: string[];             // Пол целевой аудитории
+  gender: string;               // Пол целевой аудитории
   age?: number;                 // Возраст ЦА
   mainElement: string;          // Основной элемент креатива
   secondElement?: string;       // Вторичный элемент
@@ -20,4 +20,6 @@ export interface CreativesFormData {
   background: string;           // Фон креатива
   photo: string;                // Фон креатива
   comments: string;             // Пожелания
+  brandBackground: string;      // Брендовый цвет фона
+  brandIllustrations: string;   // Брендовый цвет иллюстрации
 }

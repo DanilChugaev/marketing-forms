@@ -10,7 +10,6 @@
         filter-placeholder="Поиск"
         show-clear
         :input-id="id"
-        :selection-mode="'checkbox'"
         :virtual-scroller-options="{ itemSize: 38 }"
         class="w-full"
     />
