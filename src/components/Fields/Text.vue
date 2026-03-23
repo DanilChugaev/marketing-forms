@@ -21,7 +21,7 @@
         :auto-resize="true"
     />
 
-    <span class="info">{{description}}</span>
+    <span v-if="description" class="info">{{description}}</span>
   </div>
 </template>
 

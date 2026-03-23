@@ -162,12 +162,24 @@
     <Errors :messages="errorMessages" />
 
     <Button :loading="isSendingFormData" @click="submitForm">{{ isSendingFormData ? 'Идет обработка...' : 'Отправить' }}</Button>
+
+    <div v-if="resultImageUrl" class="row row--bottom">
+      <Text
+          v-model="resultImageUrl"
+          id="resultImageUrl"
+          label="Результат"
+          class="flex-1"
+      />
+
+      <Button @click="copy(resultImageUrl)">Скопировать</Button>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useStorage, useFetch } from '@vueuse/core'
+import { useStorage, useFetch, useClipboard } from '@vueuse/core'
 import Button from 'primevue/button';
 import { creativesFormSchema } from '../utils/validation.ts';
 import { useNotifications } from '../composables/useNotification.ts';
@@ -182,6 +194,7 @@ import Upload from './Fields/Upload.vue';
 import type { CreativesFormData } from '../types.ts';
 
 const { successNotify, errorNotify } = useNotifications();
+const { copy } = useClipboard()
 
 const webhookUrl = useStorage('creative-webhook-url', '');
 const campaignName = useStorage('creative-campaign-name', '');
@@ -205,6 +218,7 @@ const defaultFont = 'CoFo Gothic Trial';
 const font = ref(defaultFont);
 const errorMessages = ref([]);
 const isSendingFormData = ref(false);
+const resultImageUrl = ref('');
 
 const subjectKey = computed<string>(() => Object.keys(subject.value ?? {})[0] ?? '');
 const brandBackground = computed<string>(() => brandBackgroundOptions[subjectKey.value] ?? '');
@@ -262,7 +276,8 @@ async function submitForm() {
       .json();
 
   if (data.value && data.value.success) {
-    successNotify(data.value.message || 'Данные отправлены успешно');
+    resultImageUrl.value = data.value.imageUrl;
+    successNotify(data.value.message || 'Данные успешно обработаны');
   } else if (error.value) {
     errorNotify(error.value);
   } else {
