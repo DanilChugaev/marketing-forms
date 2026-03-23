@@ -1,6 +1,11 @@
 <template>
   <div class="form">
-    <RequiredInfo />
+    <div class="row">
+      <RequiredInfo class="flex-1" />
+
+      <Button @click="clearForm">Очистить форму</Button>
+    </div>
+
 
     <Separator text="Основные настройки"/>
 
@@ -173,12 +178,11 @@
 
       <Button @click="copy(resultImageUrl)">Скопировать</Button>
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import {computed, ref} from 'vue';
 import { useStorage, useFetch, useClipboard } from '@vueuse/core'
 import Button from 'primevue/button';
 import { creativesFormSchema } from '../utils/validation.ts';
@@ -227,7 +231,6 @@ const brandIllustrations = computed<string>(() => brandIllustrationsOptions[subj
 async function submitForm() {
   errorMessages.value = [];
 
-  const subjectValue = subjectKey.value === 'all' ? '' : subjectKey.value;
   let genderValue = '';
 
   if (gender.value.length > 1) {
@@ -253,7 +256,7 @@ async function submitForm() {
     background: background.value,                 // фон
     photo: photo.value,                           // фото для примера
     comments: comments.value,                     // пожелания
-    subject: subjectValue,                        // предмет
+    subject: subjectKey.value,                    // предмет
     gender: genderValue,                          // пол
   }
 
@@ -272,7 +275,10 @@ async function submitForm() {
   isSendingFormData.value = true;
 
   const { error, data } = await useFetch(webhookUrl.value)
-      .post(payload)
+      .post({
+        ...payload,
+        subject: subjectKey.value === 'all' ? '' : subjectKey.value,
+      })
       .json();
 
   if (data.value && data.value.success) {
@@ -285,5 +291,23 @@ async function submitForm() {
   }
 
   isSendingFormData.value = false;
+}
+
+function clearForm() {
+  campaignName.value = '';
+  creativeTheme.value = '';
+  subject.value = {};
+  usp.value = '';
+  gender.value = [];
+  age.value = undefined;
+  mainElement.value = '';
+  secondElement.value = '';
+  title.value = '';
+  subTitle.value = '';
+  buttonText.value = '';
+  style.value = '';
+  background.value = '';
+  photo.value = '';
+  comments.value = '';
 }
 </script>
