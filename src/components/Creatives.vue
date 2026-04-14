@@ -225,7 +225,7 @@ const font = ref(defaultFont);
 const errorMessages = ref([]);
 const isSendingFormData = ref(false);
 const isDownloading = ref(false);
-const resultImageUrl = ref('https://png.pngtree.com/thumb_back/fh260/background/20240731/pngtree-nature-beautiful-background-pictures-image_16118133.jpg');
+const resultImageUrl = ref('');
 
 const subjectKey = computed<string>(() => Object.keys(subject.value ?? {})[0] ?? '');
 const brandBackground = computed<string>(() => brandBackgroundOptions[subjectKey.value] ?? '');
