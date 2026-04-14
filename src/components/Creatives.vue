@@ -173,6 +173,8 @@
 
       <img :src="resultImageUrl" alt="Итоговое изображение">
 
+      <Button :loading="isDownloading" @click="downloadImage(resultImageUrl)">Скачать изображение</Button>
+
       <a :href="resultImageUrl" target="_blank">{{ resultImageUrl }}</a>
 
       <Button @click="copy(resultImageUrl)">Скопировать ссылку</Button>
@@ -222,7 +224,8 @@ const defaultFont = 'CoFo Gothic Trial';
 const font = ref(defaultFont);
 const errorMessages = ref([]);
 const isSendingFormData = ref(false);
-const resultImageUrl = ref('');
+const isDownloading = ref(false);
+const resultImageUrl = ref('https://png.pngtree.com/thumb_back/fh260/background/20240731/pngtree-nature-beautiful-background-pictures-image_16118133.jpg');
 
 const subjectKey = computed<string>(() => Object.keys(subject.value ?? {})[0] ?? '');
 const brandBackground = computed<string>(() => brandBackgroundOptions[subjectKey.value] ?? '');
@@ -292,6 +295,38 @@ async function submitForm() {
   }
 
   isSendingFormData.value = false;
+}
+
+/**
+ * Скачивает изображение по указанному URL
+ */
+async function downloadImage(url: string): Promise<void> {
+  try {
+    isDownloading.value = true;
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Network response was not ok');
+
+    const blob = await response.blob();
+    const objectUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = objectUrl;
+
+    const fileName = `creative-${new Date().toISOString()}.jpg`;
+    link.setAttribute('download', fileName);
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(objectUrl);
+  } catch (error) {
+    console.error('Download failed:', error);
+    alert('Ошибка при скачивании изображения');
+  } finally {
+    isDownloading.value = false;
+  }
 }
 
 function clearForm() {
