@@ -168,15 +168,14 @@
 
     <Button :loading="isSendingFormData" @click="submitForm">{{ isSendingFormData ? 'Идет обработка...' : 'Отправить' }}</Button>
 
-    <div v-if="resultImageUrl" class="row row--bottom">
-      <Text
-          v-model="resultImageUrl"
-          id="resultImageUrl"
-          label="Результат"
-          class="flex-1"
-      />
+    <div v-if="resultImageUrl" class="column" style="gap: 10px">
+      <Label label="Итоговое изображение" />
 
-      <Button @click="copy(resultImageUrl)">Скопировать</Button>
+      <img :src="resultImageUrl" alt="Итоговое изображение">
+
+      <a :href="resultImageUrl" target="_blank">{{ resultImageUrl }}</a>
+
+      <Button @click="copy(resultImageUrl)">Скопировать ссылку</Button>
     </div>
   </div>
 </template>
@@ -196,6 +195,7 @@ import Checkboxes from './Fields/Checkboxes.vue';
 import Separator from './Fields/Separator.vue';
 import Upload from './Fields/Upload.vue';
 import type { CreativesFormData } from '../types.ts';
+import Label from './Fields/Label.vue';
 
 const { successNotify, errorNotify } = useNotifications();
 const { copy } = useClipboard()
@@ -230,6 +230,7 @@ const brandIllustrations = computed<string>(() => brandIllustrationsOptions[subj
 
 async function submitForm() {
   errorMessages.value = [];
+  resultImageUrl.value = '';
 
   let genderValue = '';
 
@@ -309,5 +310,6 @@ function clearForm() {
   background.value = '';
   photo.value = '';
   comments.value = '';
+  resultImageUrl.value = '';
 }
 </script>
