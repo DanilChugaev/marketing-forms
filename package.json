@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{js,ts,vue}\"",
-    "ts:check": "vue-tsc --noEmit"
+    "ts:check": "vue-tsc -b"
   },
   "dependencies": {
     "@primeuix/themes": "^2.0.3",

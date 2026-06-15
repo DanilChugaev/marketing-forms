@@ -204,9 +204,9 @@ const { copy } = useClipboard();
 const webhookUrl = useStorage('creative-webhook-url', '');
 const campaignName = useStorage('creative-campaign-name', '');
 const creativeTheme = useStorage('creative-creative-theme', '');
-const subject = useStorage<Record<SubjectKey, boolean>>(
+const subject = useStorage<Partial<Record<SubjectKey, boolean>>>(
   'creative-subject',
-  {} as Record<SubjectKey, boolean>,
+  {},
 );
 const usp = useStorage('creative-usp', '');
 const gender = useStorage('creative-gender', []);
