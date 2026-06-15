@@ -1,27 +1,41 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import tseslint from 'typescript-eslint'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import vue from 'eslint-plugin-vue';
+import ts from '@typescript-eslint/eslint-plugin';
+import prettier from 'eslint-plugin-prettier';
+import parserVue from 'vue-eslint-parser';
+import parserTs from '@typescript-eslint/parser';
 
-export default defineConfig([
-  globalIgnores(['dist']),
+export default [
   {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-    ],
+    files: ['**/*.{js,ts,vue}'],
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+      ecmaVersion: 12,
+      sourceType: 'module',
+      parser: parserVue,
+      parserOptions: {
+        parser: parserTs,
+      },
+    },
+    plugins: {
+      vue,
+      '@typescript-eslint': ts,
+      prettier,
     },
     rules: {
-      'linebreak-style': ['error', 'unix'],
-      'quotes': ['error', 'single'],
-      'semi': ['error', 'always'],
-      'comma-dangle': ['error', 'always-multiline'],
-      "object-curly-spacing": ["error", "always"],
-      "@typescript-eslint/ban-ts-comment": 'off'
-    }
+      'prettier/prettier': 'error',
+      'vue/multi-word-component-names': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      // Правила из eslint-plugin-vue для Vue 3
+      'vue/no-unused-vars': 'error',
+      'vue/require-default-prop': 'off',
+      // Правила из @typescript-eslint
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   },
-])
+  {
+    ignores: ['dist/**', 'node_modules/**', 'sql/**'],
+  },
+];

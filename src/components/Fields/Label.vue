@@ -1,8 +1,5 @@
 <template>
-  <label
-      :for="id"
-      class="label"
-  >
+  <label :for="id" class="label">
     {{ label }}
 
     <sup v-if="required" class="required">*</sup>
@@ -16,7 +13,3 @@ defineProps<{
   required?: boolean;
 }>();
 </script>
-
-<style scoped lang="postcss">
-
-</style>

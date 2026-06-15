@@ -3,25 +3,25 @@
     <Label :id :label :required />
 
     <TreeSelect
-        v-model="model"
-        :options
-        :placeholder
-        filter
-        filter-placeholder="Поиск"
-        show-clear
-        :input-id="id"
-        :virtual-scroller-options="{ itemSize: 38 }"
-        class="w-full"
+      v-model="model"
+      :options
+      :placeholder
+      filter
+      filter-placeholder="Поиск"
+      show-clear
+      :input-id="id"
+      :virtual-scroller-options="{ itemSize: 38 }"
+      class="w-full"
     />
 
-    <span class="info">{{description}}</span>
+    <span class="info">{{ description }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
 import TreeSelect from 'primevue/treeselect';
 import Label from './Label.vue';
-import type {TreeNode} from 'primevue/treenode';
+import type { TreeNode } from 'primevue/treenode';
 
 const model = defineModel();
 

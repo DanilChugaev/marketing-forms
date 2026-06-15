@@ -3,69 +3,89 @@
     <RequiredInfo />
 
     <Text
-        v-model="webhookUrl"
-        id="webhookUrl"
-        label="Ссылка на вебхук"
-        required
+      v-model="webhookUrl"
+      id="webhookUrl"
+      label="Ссылка на вебхук"
+      required
     />
 
     <Text
-        v-model="formData.parsePhrases"
-        id="parsePhrases"
-        label="Введите фразы для парсинга"
-        description="Каждый запрос с новой строки"
-        type="textarea"
-        required
+      v-model="formData.parsePhrases"
+      id="parsePhrases"
+      label="Введите фразы для парсинга"
+      description="Каждый запрос с новой строки"
+      type="textarea"
+      required
     />
 
     <Text
-        v-model="formData.negativePhrases"
-        id="negativePhrases"
-        label="Введите минус-фразы"
-        description="Каждая фраза с новой строки"
-        type="textarea"
+      v-model="formData.negativePhrases"
+      id="negativePhrases"
+      label="Введите минус-фразы"
+      description="Каждая фраза с новой строки"
+      type="textarea"
     />
 
     <Select
-        v-model="formData.regions"
-        id="regions"
-        label="Регион"
-        placeholder="Выберите регион"
-        :options="yandexDirectRegions"
+      v-model="formData.regions"
+      id="regions"
+      label="Регион"
+      placeholder="Выберите регион"
+      :options="yandexDirectRegions"
     />
 
     <div class="column">
-      <div class="label">Добавлять исходные маски в проект?<sup class="required">*</sup></div>
+      <div class="label">
+        Добавлять исходные маски в проект?<sup class="required">*</sup>
+      </div>
 
       <div class="row">
-        <RadioButton v-model="formData.includeMasks" input-id="mask_yes" value="yes" />
+        <RadioButton
+          v-model="formData.includeMasks"
+          input-id="mask_yes"
+          value="yes"
+        />
         <label class="label" for="mask_yes">Да</label>
       </div>
 
       <div class="row">
-        <RadioButton v-model="formData.includeMasks" input-id="mask_no" value="no" />
+        <RadioButton
+          v-model="formData.includeMasks"
+          input-id="mask_no"
+          value="no"
+        />
         <label class="label" for="mask_no">Нет</label>
       </div>
     </div>
 
     <Text
-        v-model.number="formData.baseFrequency"
-        id="baseFrequency"
-        label="Собрать до базовой частоты"
-        placeholder="Введите число или оставьте пустым"
-        type="number"
+      v-model.number="formData.baseFrequency"
+      id="baseFrequency"
+      label="Собрать до базовой частоты"
+      placeholder="Введите число или оставьте пустым"
+      type="number"
     />
 
     <div class="column">
-      <div class="label">Требуется кластеризация фраз?<sup class="required">*</sup></div>
+      <div class="label">
+        Требуется кластеризация фраз?<sup class="required">*</sup>
+      </div>
 
       <div class="row">
-        <RadioButton v-model="formData.clusterPhrases" input-id="cluster_yes" value="yes" />
+        <RadioButton
+          v-model="formData.clusterPhrases"
+          input-id="cluster_yes"
+          value="yes"
+        />
         <label class="label" for="cluster_yes">Да</label>
       </div>
 
       <div class="row">
-        <RadioButton v-model="formData.clusterPhrases" input-id="cluster_no" value="no" />
+        <RadioButton
+          v-model="formData.clusterPhrases"
+          input-id="cluster_no"
+          value="no"
+        />
         <label class="label" for="cluster_no">Нет</label>
       </div>
     </div>
@@ -78,7 +98,7 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import {useStorage} from '@vueuse/core';
+import { useStorage } from '@vueuse/core';
 import RadioButton from 'primevue/radiobutton';
 import Button from 'primevue/button';
 import { semanticsFormSchema } from '../utils/validation.ts';
@@ -96,7 +116,7 @@ const formData = reactive({
   includeMasks: '',
   baseFrequency: undefined,
   clusterPhrases: '',
-})
+});
 
 const errorMessages = ref([]);
 
@@ -272,7 +292,7 @@ const yandexDirectRegions = [
   { key: '183', label: 'Азия' },
   { key: '318', label: 'Универсальное' },
   { key: '-1', label: 'Весь мир' },
-  { key: '0', label: 'Без учёта региона' }
+  { key: '0', label: 'Без учёта региона' },
 ];
 
 async function submitForm() {
@@ -282,7 +302,9 @@ async function submitForm() {
       ...formData,
     });
   } catch (error: any) {
-    errorMessages.value = error.issues.map((issue: { message: string }) => issue.message);
+    errorMessages.value = error.issues.map(
+      (issue: { message: string }) => issue.message,
+    );
     console.error('Ошибка валидации:', error.issues);
   }
 }

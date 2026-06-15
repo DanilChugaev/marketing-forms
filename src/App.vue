@@ -5,7 +5,7 @@
     <Tabs value="0">
       <TabList>
         <Tab value="0">Креативы</Tab>
-<!--         <Tab value="1">Семантика</Tab> -->
+        <Tab value="1">Расширение семантического ядра</Tab>
         <Tab value="2">Кампания</Tab>
       </TabList>
 
@@ -14,9 +14,9 @@
           <Creatives />
         </TabPanel>
 
-<!--         <TabPanel value="1"> -->
-<!--           <Semantics /> -->
-<!--         </TabPanel> -->
+        <TabPanel value="1">
+          <Semantics />
+        </TabPanel>
 
         <TabPanel value="2">
           <Campaign />
@@ -25,7 +25,7 @@
     </Tabs>
   </div>
 
-  <Toast position="top-right"/>
+  <Toast position="top-right" />
 </template>
 
 <script setup lang="ts">
@@ -37,7 +37,7 @@ import TabPanel from 'primevue/tabpanel';
 import Toast from 'primevue/toast';
 
 import Creatives from './components/Creatives.vue';
-// import Semantics from './components/Semantics.vue';
+import Semantics from './components/Semantics.vue';
 import Campaign from './components/Campaign.vue';
 </script>
 

@@ -1,4 +1,8 @@
-import { type LabelValuePair, type GenericTreeNode, SubjectKey } from '../types.ts';
+import {
+  type LabelValuePair,
+  type GenericTreeNode,
+  SubjectKey,
+} from '../types.ts';
 
 export const formatOptions: LabelValuePair[] = [
   { value: '1080x1080', label: '1080x1080 (ТГО)' },

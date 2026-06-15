@@ -1,12 +1,12 @@
 <template>
   <div class="separator">
-    {{text}}
+    {{ text }}
   </div>
 </template>
 
 <script setup lang="ts">
 defineProps<{
-  text: string
+  text: string;
 }>();
 </script>
 

@@ -3,25 +3,25 @@
     <Label :id :label :required />
 
     <InputText
-        v-if="type === 'text' || type === 'number'"
-        v-model="model"
-        :id="id"
-        :required
-        :placeholder
-        :type
-        :disabled
+      v-if="type === 'text' || type === 'number'"
+      v-model="model"
+      :id="id"
+      :required
+      :placeholder
+      :type
+      :disabled
     />
 
     <Textarea
-        v-else
-        v-model="model as string"
-        :id="id"
-        :required
-        :placeholder
-        :auto-resize="true"
+      v-else
+      v-model="model as string"
+      :id="id"
+      :required
+      :placeholder
+      :auto-resize="true"
     />
 
-    <span v-if="description" class="info">{{description}}</span>
+    <span v-if="description" class="info">{{ description }}</span>
   </div>
 </template>
 
@@ -44,6 +44,6 @@ withDefaults(
   }>(),
   {
     type: 'text',
-  }
+  },
 );
 </script>

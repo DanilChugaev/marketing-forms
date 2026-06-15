@@ -1,7 +1,7 @@
 import { useToast } from 'primevue/usetoast';
 
-type NotifyType = 'success' | 'error'
-type NotifyMessage = string
+type NotifyType = 'success' | 'error';
+type NotifyMessage = string;
 
 export function useNotifications() {
   const toast = useToast();
@@ -17,7 +17,6 @@ export function useNotifications() {
 
   const successNotify = (message: NotifyMessage) => notify('success', message);
   const errorNotify = (message: NotifyMessage) => notify('error', message);
-
 
   return {
     successNotify,

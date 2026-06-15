@@ -7,41 +7,37 @@
     </div>
 
     <Text
-        v-model="webhookUrl"
-        id="webhookUrl"
-        label="Ссылка на вебхук"
-        required
+      v-model="webhookUrl"
+      id="webhookUrl"
+      label="Ссылка на вебхук"
+      required
     />
+
+    <Text v-model="id" id="age" label="ID тг чата" type="number" required />
 
     <Text
-        v-model="id"
-        id="age"
-        label="ID тг чата"
-        type="number"
-        required
+      v-model="Ids"
+      id="age"
+      label="ID(s) кампании(й)"
+      type="textarea"
+      required
     />
 
-    <Text
-        v-model="Ids"
-        id="age"
-        label="ID(s) кампании(й)"
-        type="textarea"
-        required
-    />
-
-    <Button :loading="isSendingFormData" @click="submitForm">{{ isSendingFormData ? 'Идет обработка...' : 'Отправить' }}</Button>
+    <Button :loading="isSendingFormData" @click="submitForm">{{
+      isSendingFormData ? 'Идет обработка...' : 'Отправить'
+    }}</Button>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import { ref } from 'vue';
 import { useStorage, useFetch } from '@vueuse/core';
 import RequiredInfo from './Fields/RequiredInfo.vue';
 import Text from './Fields/Text.vue';
 import Button from 'primevue/button';
-import type {CampaignFormData} from '../types.ts';
-import {campaignFormSchema} from '../utils/validation.ts';
-import {useNotifications} from '../composables/useNotification.ts';
+import type { CampaignFormData } from '../types.ts';
+import { campaignFormSchema } from '../utils/validation.ts';
+import { useNotifications } from '../composables/useNotification.ts';
 
 const { successNotify, errorNotify } = useNotifications();
 
@@ -69,9 +65,9 @@ async function submitForm() {
   errorMessages.value = [];
 
   const payload: CampaignFormData = {
-    id: id.value,   // id тг чата
+    id: id.value, // id тг чата
     Ids: parseCampaignIds(Ids.value), // IDs кампаний
-  }
+  };
 
   try {
     await campaignFormSchema.parseAsync({
@@ -79,7 +75,9 @@ async function submitForm() {
       ...payload,
     });
   } catch (error: any) {
-    errorMessages.value = error.issues.map((issue: { message: string }) => issue.message);
+    errorMessages.value = error.issues.map(
+      (issue: { message: string }) => issue.message,
+    );
     console.error('Ошибка валидации:', error.issues);
 
     return;
@@ -87,9 +85,7 @@ async function submitForm() {
 
   isSendingFormData.value = true;
 
-  const { error, data } = await useFetch(webhookUrl.value)
-      .post(payload)
-      .json();
+  const { error, data } = await useFetch(webhookUrl.value).post(payload).json();
 
   if (data.value && data.value.success) {
     successNotify(data.value.message || 'Данные успешно обработаны');
