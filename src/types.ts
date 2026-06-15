@@ -48,6 +48,5 @@ export interface CreativesFormData {
 }
 
 export interface CampaignFormData {
-  id: string; // id тг чата
-  Ids: string; // IDs кампаний
+  id: string; // ID кампании
 }

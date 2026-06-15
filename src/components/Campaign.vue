@@ -13,19 +13,95 @@
       required
     />
 
-    <Text v-model="id" id="age" label="ID тг чата" type="number" required />
-
-    <Text
-      v-model="Ids"
-      id="age"
-      label="ID(s) кампании(й)"
-      type="textarea"
-      required
-    />
+    <Text v-model="id" id="campaign" label="ID кампании" required />
 
     <Button :loading="isSendingFormData" @click="submitForm">{{
       isSendingFormData ? 'Идет обработка...' : 'Отправить'
     }}</Button>
+
+    {{ responseData }}
+
+    <!-- Отображение данных ответа -->
+    <div
+      v-if="showResponse && responseData.length > 0"
+      class="response-section"
+    >
+      <div class="response-header">
+        <h3>Результат анализа:</h3>
+      </div>
+
+      <div class="response-block">
+        <template
+          v-if="
+            responseData &&
+            responseData.length > 0 &&
+            !!responseData[0].negative_word
+          "
+        >
+          <div class="section-title">
+            ⚠️ Подозрительные отрицательные слова:
+          </div>
+
+          <div class="negatives-list">
+            <div
+              v-for="(negative, negIndex) in responseData"
+              :key="negIndex"
+              class="negative-item"
+            >
+              <div class="negative-word">{{ negative.negative_word }}</div>
+
+              <div class="negative-details">
+                <div class="column">
+                  <span class="label">Причина:</span>
+                  <span class="value">{{ negative.reason }}</span>
+                </div>
+
+                <div class="column">
+                  <span class="label">Уверенность:</span>
+                  <span
+                    class="value confidence"
+                    :class="'confidence-' + negative.confidence"
+                  >
+                    {{ translateConfidence(negative.confidence) }}
+                  </span>
+                </div>
+
+                <div class="column">
+                  <span class="label">Рекомендация:</span>
+                  <span class="value recommendation">{{
+                    translateRecommendation(negative.recommendation)
+                  }}</span>
+                </div>
+
+                <div
+                  v-if="
+                    negative.conflicting_keywords &&
+                    negative.conflicting_keywords.length > 0
+                  "
+                  class="column"
+                >
+                  <span class="label">Конфликтующие ключевые слова:</span>
+                  <span class="value">{{
+                    negative.conflicting_keywords.join(', ')
+                  }}</span>
+                </div>
+
+                <div class="column">
+                  <span class="label">Источник:</span>
+                  <span class="value">{{ negative.source }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <template v-else>
+          <div class="no-negatives">
+            Подозрительные отрицательные слова не найдены.
+          </div>
+        </template>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -42,31 +118,19 @@ import { useNotifications } from '../composables/useNotification.ts';
 const { successNotify, errorNotify } = useNotifications();
 
 const webhookUrl = useStorage('campaign-webhook-url', '');
-const id = useStorage('creative-tg-id', '');
-const Ids = useStorage('creative-campaign-ids', '');
+const id = useStorage('creative-campaign-id', '');
 
 const errorMessages = ref([]);
 const isSendingFormData = ref(false);
-
-function parseCampaignIds(input: string): string {
-  // Разделяем по запятой, пробелу и переносу строки
-  const parts = input.split(/[,\s\n]+/);
-  // Фильтруем пустые значения, оставляем только цифры, преобразуем в числа и обратно в строки
-  const ids = parts
-    .map(part => part.trim())
-    .filter(part => part.length > 0)
-    .map(part => part.replace(/[^\d]/g, ''))
-    .filter(part => part.length > 0);
-  // Возвращаем как единую строку через запятую
-  return ids.join(',');
-}
+const responseData = ref<any[]>([]);
+const showResponse = ref(false);
 
 async function submitForm() {
   errorMessages.value = [];
+  resetResponse();
 
   const payload: CampaignFormData = {
-    id: id.value, // id тг чата
-    Ids: parseCampaignIds(Ids.value), // IDs кампаний
+    id: id.value, // ID кампании
   };
 
   try {
@@ -89,6 +153,15 @@ async function submitForm() {
 
   if (data.value && data.value.success) {
     successNotify(data.value.message || 'Данные успешно обработаны');
+
+    // Сохраняем и отображаем данные ответа
+    if (
+      data.value?.data &&
+      Array.isArray(data.value.data.all_suspicious_negatives)
+    ) {
+      responseData.value = data.value.data.all_suspicious_negatives;
+      showResponse.value = true;
+    }
   } else if (error.value) {
     errorNotify(error.value);
   } else {
@@ -100,6 +173,28 @@ async function submitForm() {
 
 function clearForm() {
   id.value = '';
-  Ids.value = '';
+}
+
+// Сброс отображения ответа
+function resetResponse() {
+  showResponse.value = false;
+  responseData.value = [];
+}
+
+function translateConfidence(confidence: string): string {
+  const map: Record<string, string> = {
+    high: 'Высокая',
+    medium: 'Средняя',
+    low: 'Низкая',
+  };
+  return map[confidence] || confidence;
+}
+
+function translateRecommendation(rec: string): string {
+  const map: Record<string, string> = {
+    keep_for_review: 'Проверить вручную',
+    remove: 'Удалить',
+  };
+  return map[rec] || rec;
 }
 </script>

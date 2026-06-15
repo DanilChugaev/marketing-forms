@@ -6,7 +6,8 @@
       <TabList>
         <Tab value="0">Креативы</Tab>
         <Tab value="1">Расширение семантического ядра</Tab>
-        <Tab value="2">Кампания</Tab>
+        <Tab value="2">Проверка минус-слов</Tab>
+        <Tab value="3">Настройка уведомлений статистики</Tab>
       </TabList>
 
       <TabPanels>
@@ -20,6 +21,10 @@
 
         <TabPanel value="2">
           <Campaign />
+        </TabPanel>
+
+        <TabPanel value="3">
+          <Statistics />
         </TabPanel>
       </TabPanels>
     </Tabs>
@@ -39,6 +44,7 @@ import Toast from 'primevue/toast';
 import Creatives from './components/Creatives.vue';
 import Semantics from './components/Semantics.vue';
 import Campaign from './components/Campaign.vue';
+import Statistics from './components/Statistics.vue';
 </script>
 
 <style lang="postcss">

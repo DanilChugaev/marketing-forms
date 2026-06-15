@@ -34,6 +34,5 @@ export const semanticsFormSchema = z.object({
 
 export const campaignFormSchema = z.object({
   webhookUrl: z.string().url({ message: 'Некорректная ссылка на вебхук' }),
-  id: z.string().min(1, { message: 'ID тг чата не может быть пустым' }),
-  Ids: z.string().min(1, { message: 'ID(s) кампании(й) не может быть пустым' }),
+  id: z.string().min(1, { message: 'ID кампании не может быть пустым' }),
 });

@@ -1,5 +1,5 @@
 <template>
-  <label :for="id" class="label">
+  <label :for="id" :class="['label', { 'label--pointer': id }]">
     {{ label }}
 
     <sup v-if="required" class="required">*</sup>
