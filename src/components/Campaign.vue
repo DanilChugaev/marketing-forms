@@ -19,8 +19,6 @@
       isSendingFormData ? 'Идет обработка...' : 'Отправить'
     }}</Button>
 
-    {{ responseData }}
-
     <!-- Отображение данных ответа -->
     <div
       v-if="showResponse && responseData.length > 0"
