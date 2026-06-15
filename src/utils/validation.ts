@@ -36,3 +36,15 @@ export const campaignFormSchema = z.object({
   webhookUrl: z.string().url({ message: 'Некорректная ссылка на вебхук' }),
   id: z.string().min(1, { message: 'ID кампании не может быть пустым' }),
 });
+
+export const statisticsFormSchema = z
+  .object({
+    webhookUrl: z.string().url({ message: 'Некорректная ссылка на вебхук' }),
+    id: z.string().min(1, { message: 'ID чата не может быть пустым' }),
+    ids: z.string().optional(),
+    specialist: z.string().optional(),
+  })
+  .refine(data => data.ids || data.specialist, {
+    message: 'Укажите хотя бы одно: ID кампании или справочник специалиста',
+    path: ['ids'],
+  });

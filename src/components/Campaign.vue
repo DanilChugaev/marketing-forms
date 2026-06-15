@@ -15,6 +15,8 @@
 
     <Text v-model="id" id="campaign" label="ID кампании" required />
 
+    <Errors :messages="errorMessages" />
+
     <Button :loading="isSendingFormData" @click="submitForm">{{
       isSendingFormData ? 'Идет обработка...' : 'Отправить'
     }}</Button>
@@ -112,11 +114,12 @@ import Button from 'primevue/button';
 import type { CampaignFormData } from '../types.ts';
 import { campaignFormSchema } from '../utils/validation.ts';
 import { useNotifications } from '../composables/useNotification.ts';
+import Errors from './Fields/Errors.vue';
 
 const { successNotify, errorNotify } = useNotifications();
 
 const webhookUrl = useStorage('campaign-webhook-url', '');
-const id = useStorage('creative-campaign-id', '');
+const id = useStorage('campaign-id', '');
 
 const errorMessages = ref([]);
 const isSendingFormData = ref(false);

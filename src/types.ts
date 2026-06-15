@@ -50,3 +50,9 @@ export interface CreativesFormData {
 export interface CampaignFormData {
   id: string; // ID кампании
 }
+
+export interface StatisticsFormData {
+  id: string; // ID тг чата
+  ids: string; // ID кампаний
+  specialist: string; // Справочник специалиста
+}
