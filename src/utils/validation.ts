@@ -17,3 +17,9 @@ export const semanticsFormSchema = z.object({
   includeMasks: z.enum(['yes', 'no'], { message: 'Выберите, добавлять ли маски в проект' }),
   clusterPhrases: z.enum(['yes', 'no'], { message: 'Выберите, кластеризовать ли фразы' }),
 });
+
+export const campaignFormSchema = z.object({
+  webhookUrl: z.string().url({ message: 'Некорректная ссылка на вебхук' }),
+  id: z.string().min(1, { message: 'ID тг чата не может быть пустым' }),
+  Ids: z.string().min(1, { message: 'ID(s) кампании(й) не может быть пустым' }),
+});

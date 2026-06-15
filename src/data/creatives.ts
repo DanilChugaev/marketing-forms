@@ -1,5 +1,4 @@
-import type { LabelValuePair } from '../types.ts';
-import type { TreeNode } from 'primevue/treenode';
+import { type LabelValuePair, type GenericTreeNode, SubjectKey } from '../types.ts';
 
 export const formatOptions: LabelValuePair[] = [
   { value: '1080x1080', label: '1080x1080 (ТГО)' },
@@ -17,21 +16,21 @@ export const formatOptions: LabelValuePair[] = [
   { value: '940x640', label: '940x640 (ГО мобилки)' },
 ];
 
-export const subjectOptions: TreeNode[] = [
-  { key: 'all', label: 'Без уточнения предмета' },
-  { key: 'Физика', label: 'Физика' },
-  { key: 'Биология', label: 'Биология' },
-  { key: 'Химия', label: 'Химия' },
-  { key: 'География', label: 'География' },
-  { key: 'Немецкий', label: 'Немецкий' },
-  { key: 'История', label: 'История' },
-  { key: 'Английский', label: 'Английский' },
-  { key: 'Русский', label: 'Русский' },
-  { key: 'Литература', label: 'Литература' },
-  { key: 'Обществознание', label: 'Обществознание' },
-  { key: 'Информатика', label: 'Информатика' },
-  { key: 'База', label: 'База' },
-  { key: 'Математика', label: 'Математика' },
+export const subjectOptions: GenericTreeNode<SubjectKey>[] = [
+  { key: SubjectKey.All, label: 'Без уточнения предмета' },
+  { key: SubjectKey.Physics, label: 'Физика' },
+  { key: SubjectKey.Biology, label: 'Биология' },
+  { key: SubjectKey.Chemistry, label: 'Химия' },
+  { key: SubjectKey.Geography, label: 'География' },
+  { key: SubjectKey.German, label: 'Немецкий' },
+  { key: SubjectKey.History, label: 'История' },
+  { key: SubjectKey.English, label: 'Английский' },
+  { key: SubjectKey.Russian, label: 'Русский' },
+  { key: SubjectKey.Literature, label: 'Литература' },
+  { key: SubjectKey.SocialStudies, label: 'Обществознание' },
+  { key: SubjectKey.ComputerScience, label: 'Информатика' },
+  { key: SubjectKey.Base, label: 'База' },
+  { key: SubjectKey.Math, label: 'Математика' },
 ];
 
 export const genderOptions: LabelValuePair[] = [
@@ -39,36 +38,36 @@ export const genderOptions: LabelValuePair[] = [
   { value: 'женский', label: 'Женщины' },
 ];
 
-export const brandBackgroundOptions: Record<string, string> = {
-  all: 'FF9B50, FFCDA1, FFF3E0',
-  'Физика': '51C4EA, 9FEDFE, CBFDFD',
-  'Биология': '5DC83A, C3F97F, FBFA8E',
-  'Химия': 'D951D1, ED6DDA, F09AF1',
-  'География': '61C996, 7CFBD2, BBFDF1',
-  'Немецкий': 'BDAE74, E3D57B, FDF5C7',
-  'История': 'C93C4F, EC4E65, F3A4A9',
-  'Английский': '3679D0, 87BCF2, B9DCFC',
-  'Русский': 'D6844C, F1A362, F6CFA6',
-  'Литература': '7772D8, 9C94F7, CAD1FB',
-  'Обществознание': 'E1C95A, FBE84C, FDF684',
-  'Информатика': '7D3AE2, 9458F6, B78CF8',
-  'База': '717FAA, 8E9BCF, B1C0E9',
-  'Математика': '7D8AB6, 9BACDA, CCD9FC',
+export const brandBackgroundOptions: Record<SubjectKey, string> = {
+  [SubjectKey.All]: 'FF9B50, FFCDA1, FFF3E0',
+  [SubjectKey.Physics]: '51C4EA, 9FEDFE, CBFDFD',
+  [SubjectKey.Biology]: '5DC83A, C3F97F, FBFA8E',
+  [SubjectKey.Chemistry]: 'D951D1, ED6DDA, F09AF1',
+  [SubjectKey.Geography]: '61C996, 7CFBD2, BBFDF1',
+  [SubjectKey.German]: 'BDAE74, E3D57B, FDF5C7',
+  [SubjectKey.History]: 'C93C4F, EC4E65, F3A4A9',
+  [SubjectKey.English]: '3679D0, 87BCF2, B9DCFC',
+  [SubjectKey.Russian]: 'D6844C, F1A362, F6CFA6',
+  [SubjectKey.Literature]: '7772D8, 9C94F7, CAD1FB',
+  [SubjectKey.SocialStudies]: 'E1C95A, FBE84C, FDF684',
+  [SubjectKey.ComputerScience]: '7D3AE2, 9458F6, B78CF8',
+  [SubjectKey.Base]: '717FAA, 8E9BCF, B1C0E9',
+  [SubjectKey.Math]: '7D8AB6, 9BACDA, CCD9FC',
 };
 
-export const brandIllustrationsOptions: Record<string, string> = {
-  all: 'FF7E3A',
-  'Физика': 'FDC776',
-  'Биология': '66B1FF',
-  'Химия': '93FFCD',
-  'География': 'EF954C',
-  'Немецкий': 'CF8BF3',
-  'История': '93F122',
-  'Английский': '60FF64',
-  'Русский': '50F3FF',
-  'Литература': 'DBFF6A',
-  'Обществознание': 'FF78A7',
-  'Информатика': 'FFCB4C',
-  'База': 'FFEB28',
-  'Математика': 'FFEB28',
+export const brandIllustrationsOptions: Record<SubjectKey, string> = {
+  [SubjectKey.All]: 'FF7E3A',
+  [SubjectKey.Physics]: 'FDC776',
+  [SubjectKey.Biology]: '66B1FF',
+  [SubjectKey.Chemistry]: '93FFCD',
+  [SubjectKey.Geography]: 'EF954C',
+  [SubjectKey.German]: 'CF8BF3',
+  [SubjectKey.History]: '93F122',
+  [SubjectKey.English]: '60FF64',
+  [SubjectKey.Russian]: '50F3FF',
+  [SubjectKey.Literature]: 'DBFF6A',
+  [SubjectKey.SocialStudies]: 'FF78A7',
+  [SubjectKey.ComputerScience]: 'FFCB4C',
+  [SubjectKey.Base]: 'FFEB28',
+  [SubjectKey.Math]: 'FFEB28',
 };

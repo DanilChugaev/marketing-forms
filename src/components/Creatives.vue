@@ -6,7 +6,6 @@
       <Button @click="clearForm">Очистить форму</Button>
     </div>
 
-
     <Separator text="Основные настройки"/>
 
     <Text
@@ -116,14 +115,14 @@
         :model-value="brandBackground"
         id="brandBackground"
         label="Брендовый цвет фона"
-        disabled
+        :disabled="subjectKey != SubjectKey.All"
     />
 
     <Text
         :model-value="brandIllustrations"
         id="brandIllustrations"
         label="Брендовый цвет иллюстрации"
-        disabled
+        :disabled="subjectKey != SubjectKey.All"
     />
 
     <Text
@@ -196,7 +195,7 @@ import { brandBackgroundOptions, brandIllustrationsOptions, genderOptions, subje
 import Checkboxes from './Fields/Checkboxes.vue';
 import Separator from './Fields/Separator.vue';
 import Upload from './Fields/Upload.vue';
-import type { CreativesFormData } from '../types.ts';
+import {type CreativesFormData, SubjectKey} from '../types.ts';
 import Label from './Fields/Label.vue';
 
 const { successNotify, errorNotify } = useNotifications();
@@ -205,7 +204,7 @@ const { copy } = useClipboard()
 const webhookUrl = useStorage('creative-webhook-url', '');
 const campaignName = useStorage('creative-campaign-name', '');
 const creativeTheme = useStorage('creative-creative-theme', '');
-const subject = useStorage<Record<string, any>>('creative-subject', {});
+const subject = useStorage<Record<SubjectKey, boolean>>('creative-subject', {} as Record<SubjectKey, boolean>);
 const usp = useStorage('creative-usp', '');
 const gender = useStorage('creative-gender', []);
 const age = useStorage('creative-age', undefined);
@@ -227,7 +226,7 @@ const isSendingFormData = ref(false);
 const isDownloading = ref(false);
 const resultImageUrl = ref('');
 
-const subjectKey = computed<string>(() => Object.keys(subject.value ?? {})[0] ?? '');
+const subjectKey = computed<SubjectKey>(() => Object.keys(subject.value ?? {})[0] as SubjectKey ?? SubjectKey.All);
 const brandBackground = computed<string>(() => brandBackgroundOptions[subjectKey.value] ?? '');
 const brandIllustrations = computed<string>(() => brandIllustrationsOptions[subjectKey.value] ?? '');
 
