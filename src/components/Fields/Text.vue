@@ -3,13 +3,24 @@
     <Label :id :label :required />
 
     <InputText
-      v-if="type === 'text' || type === 'number'"
+      v-if="type === 'text'"
+      v-model="model"
+      type="text"
+      :id="id"
+      :required
+      :placeholder
+      :disabled
+    />
+
+    <InputNumber
+      v-else-if="type === 'number'"
       v-model="model"
       :id="id"
       :required
       :placeholder
-      :type
       :disabled
+      :min
+      :max
     />
 
     <Textarea
@@ -26,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import InputNumber from 'primevue/inputnumber';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Label from './Label.vue';
@@ -41,6 +53,8 @@ withDefaults(
     placeholder?: string;
     description?: string;
     type?: 'text' | 'number' | 'textarea';
+    min?: number;
+    max?: number;
   }>(),
   {
     type: 'text',

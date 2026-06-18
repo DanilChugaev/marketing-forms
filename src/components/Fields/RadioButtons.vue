@@ -2,14 +2,14 @@
   <div class="column">
     <Label :label :required />
 
-    <div v-for="option in options" :key="option.value" class="row">
-      <Checkbox
+    <div v-for="gender in options" :key="gender.value" class="row">
+      <RadioButton
         v-model="model"
-        :input-id="option.value"
-        :value="option.value"
+        :input-id="gender.value"
+        :value="gender.value"
       />
 
-      <Label :id="option.value" :label="option.label" />
+      <Label :id="gender.value" :label="gender.label" />
     </div>
 
     <span class="info">{{ description }}</span>
@@ -17,11 +17,11 @@
 </template>
 
 <script setup lang="ts">
-import Checkbox from 'primevue/checkbox';
+import RadioButton from 'primevue/radiobutton';
 import Label from './Label.vue';
 import type { LabelValuePair } from '../../types.ts';
 
-const model = defineModel<string[]>();
+const model = defineModel<string>();
 
 defineProps<{
   label: string;

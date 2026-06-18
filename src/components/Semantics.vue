@@ -1,6 +1,10 @@
 <template>
   <div class="form">
-    <RequiredInfo />
+    <div class="row">
+      <RequiredInfo class="flex-1" />
+
+      <Button @click="clearForm">Очистить форму</Button>
+    </div>
 
     <Text
       v-model="webhookUrl"
@@ -9,303 +13,220 @@
       required
     />
 
+    <Text v-model="reportName" id="reportName" label="Имя отчета" required />
+
     <Text
-      v-model="formData.parsePhrases"
+      v-model="parsePhrases"
       id="parsePhrases"
       label="Введите фразы для парсинга"
-      description="Каждый запрос с новой строки"
+      description="Каждая фраза с новой строки"
       type="textarea"
       required
     />
 
     <Text
-      v-model="formData.negativePhrases"
+      v-model="minFrequency"
+      id="minFrequency"
+      label="Минимальная частотность"
+      type="number"
+      :min="0"
+      :max="maxFrequency"
+    />
+
+    <Text
+      v-model="maxFrequency"
+      id="maxFrequency"
+      label="Максимальная частотность"
+      type="number"
+      :min="minFrequency"
+      :max="999999999"
+    />
+
+    <Text
+      v-model="positivePhrases"
       id="negativePhrases"
-      label="Введите минус-фразы"
+      label="В фразах должна быть любая из строк"
+      description="Каждая фраза с новой строки"
+      type="textarea"
+    />
+
+    <Text
+      v-model="negativePhrases"
+      id="negativePhrases"
+      label="В фразах не должно быть любой из строк"
       description="Каждая фраза с новой строки"
       type="textarea"
     />
 
     <Select
-      v-model="formData.regions"
+      v-model="regions"
       id="regions"
       label="Регион"
       placeholder="Выберите регион"
-      :options="yandexDirectRegions"
+      :options="yandexDirectRegionsOptions"
+      required
     />
 
-    <div class="column">
-      <div class="label">
-        Добавлять исходные маски в проект?<sup class="required">*</sup>
-      </div>
-
-      <div class="row">
-        <RadioButton
-          v-model="formData.includeMasks"
-          input-id="mask_yes"
-          value="yes"
-        />
-        <label class="label" for="mask_yes">Да</label>
-      </div>
-
-      <div class="row">
-        <RadioButton
-          v-model="formData.includeMasks"
-          input-id="mask_no"
-          value="no"
-        />
-        <label class="label" for="mask_no">Нет</label>
-      </div>
-    </div>
+    <Select
+      v-model="viewingDepth"
+      id="viewingDepth"
+      label="Глубина просмотра"
+      placeholder="Выберите глубину просмотра"
+      :options="viewingDepthOptions"
+      required
+    />
 
     <Text
-      v-model.number="formData.baseFrequency"
-      id="baseFrequency"
-      label="Собрать до базовой частоты"
-      placeholder="Введите число или оставьте пустым"
+      v-model="minKeyWeight"
+      id="minKeyWeight"
+      label="Минимальный вес ключа (от 1 до 10)"
+      description="Минимальное количество страниц, которое должно быть в выдаче по фразе из списка страниц найденных по фразам для расширения ядра, что бы она попала в отчет.
+Если указать 2, то в отчет попадут ключи в выдаче которых будет находиться минимум 2 страницы из списка страниц, которые будут найдены по заданным ключам.
+Если указать 1, то в отчет попадут все фразы у которых в выдаче встречается любой домен из списка.
+Чем больше вес - тем ключ является более тематическим.
+Внимание: если в отчет попало 0 ключей, скорее всего вы выставили слишком большое значение веса."
       type="number"
+      required
+      :min="1"
+      :max="10"
     />
 
-    <div class="column">
-      <div class="label">
-        Требуется кластеризация фраз?<sup class="required">*</sup>
-      </div>
+    <CheckboxEl
+      v-model="clusterPhrases"
+      id="clusterPhrases"
+      label="Требуется кластеризация фраз"
+    />
 
-      <div class="row">
-        <RadioButton
-          v-model="formData.clusterPhrases"
-          input-id="cluster_yes"
-          value="yes"
-        />
-        <label class="label" for="cluster_yes">Да</label>
-      </div>
+    <CheckboxEl
+      v-model="popularSourcePhrasesForms"
+      id="popularSourcePhrasesForms"
+      label="Использовать самые популярные формы исходных фраз"
+      description="Найдем самые популярные формы исходных фраз и выполним отчет на их основе.
+В большинстве случаев рекомендуем оставить галочку."
+    />
 
-      <div class="row">
-        <RadioButton
-          v-model="formData.clusterPhrases"
-          input-id="cluster_no"
-          value="no"
-        />
-        <label class="label" for="cluster_no">Нет</label>
-      </div>
-    </div>
-
+    <CheckboxEl
+      v-model="excludeSourcePhrases"
+      id="excludeSourcePhrases"
+      label="Исключить исходные фразы из отчета"
+    />
     <Errors :messages="errorMessages" />
 
-    <Button @click="submitForm">Отправить</Button>
+    <Button :loading="isSendingFormData" @click="submitForm">{{
+      isSendingFormData ? 'Идет обработка...' : 'Отправить'
+    }}</Button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import { useStorage } from '@vueuse/core';
-import RadioButton from 'primevue/radiobutton';
+import { computed, ref } from 'vue';
+import { useFetch, useStorage } from '@vueuse/core';
 import Button from 'primevue/button';
 import { semanticsFormSchema } from '../utils/validation.ts';
+import { useNotifications } from '../composables/useNotification.ts';
+import {
+  viewingDepthOptions,
+  yandexDirectRegionsOptions,
+} from '../data/semantics.ts';
+
 import RequiredInfo from './Fields/RequiredInfo.vue';
 import Errors from './Fields/Errors.vue';
 import Text from './Fields/Text.vue';
 import Select from './Fields/Select.vue';
+import CheckboxEl from './Fields/CheckboxEl.vue';
+import { type SemanticsFormData } from '../types.ts';
+
+const { successNotify, errorNotify } = useNotifications();
 
 const webhookUrl = useStorage('semantics-webhook-url', '');
-
-const formData = reactive({
-  parsePhrases: '',
-  negativePhrases: '',
-  regions: [],
-  includeMasks: '',
-  baseFrequency: undefined,
-  clusterPhrases: '',
-});
+const reportName = useStorage('semantics-report-name', '');
+const parsePhrases = useStorage('semantics-parse-phrases', '');
+const minFrequency = useStorage('semantics-min-frequency', 0);
+const maxFrequency = useStorage('semantics-max-frequency', 999999999);
+const positivePhrases = useStorage('semantics-positive-phrases', '');
+const negativePhrases = useStorage('semantics-negative-phrases', '');
+const regions = useStorage('semantics-regions', { '213': true });
+const viewingDepth = useStorage('semantics-viewing-depth', { '10': true });
+const minKeyWeight = useStorage('semantics-min-key-weight', 2);
+const clusterPhrases = useStorage('semantics-cluster-phrases', false);
+const popularSourcePhrasesForms = useStorage(
+  'semantics-popular-source-phrases-forms',
+  true,
+);
+const excludeSourcePhrases = useStorage(
+  'semantics-exclude-source-phrases',
+  false,
+);
 
 const errorMessages = ref([]);
+const isSendingFormData = ref(false);
 
-const yandexDirectRegions = [
-  { key: '225', label: 'Россия' },
-  { key: '1', label: 'Москва и Московская область' },
-  { key: '213', label: 'Москва' },
-  { key: '2', label: 'Санкт-Петербург' },
-  { key: '10174', label: 'Санкт-Петербург и Ленинградская область' },
-  { key: '3', label: 'Центр' },
-  { key: '4', label: 'Белгород' },
-  { key: '10645', label: 'Белгородская область' },
-  { key: '5', label: 'Иваново' },
-  { key: '6', label: 'Калуга' },
-  { key: '7', label: 'Кострома' },
-  { key: '8', label: 'Курск' },
-  { key: '9', label: 'Липецк' },
-  { key: '10', label: 'Орёл' },
-  { key: '11', label: 'Рязань' },
-  { key: '12', label: 'Смоленск' },
-  { key: '13', label: 'Тамбов' },
-  { key: '14', label: 'Тверь' },
-  { key: '15', label: 'Тула' },
-  { key: '16', label: 'Ярославль' },
-  { key: '17', label: 'Северо-Запад' },
-  { key: '18', label: 'Петрозаводск' },
-  { key: '19', label: 'Сыктывкар' },
-  { key: '20', label: 'Архангельск' },
-  { key: '21', label: 'Вологда' },
-  { key: '22', label: 'Калининград' },
-  { key: '23', label: 'Мурманск' },
-  { key: '24', label: 'Великий Новгород' },
-  { key: '25', label: 'Псков' },
-  { key: '26', label: 'Юг' },
-  { key: '28', label: 'Махачкала' },
-  { key: '30', label: 'Нальчик' },
-  { key: '33', label: 'Владикавказ' },
-  { key: '35', label: 'Краснодар' },
-  { key: '36', label: 'Ставрополь' },
-  { key: '37', label: 'Астрахань' },
-  { key: '38', label: 'Волгоград' },
-  { key: '39', label: 'Ростов-на-Дону' },
-  { key: '40', label: 'Поволжье' },
-  { key: '41', label: 'Йошкар-Ола' },
-  { key: '42', label: 'Саранск' },
-  { key: '43', label: 'Казань' },
-  { key: '44', label: 'Ижевск' },
-  { key: '45', label: 'Чебоксары' },
-  { key: '46', label: 'Киров' },
-  { key: '47', label: 'Нижний Новгород' },
-  { key: '48', label: 'Оренбург' },
-  { key: '49', label: 'Пенза' },
-  { key: '50', label: 'Пермь' },
-  { key: '51', label: 'Самара' },
-  { key: '52', label: 'Урал' },
-  { key: '53', label: 'Курган' },
-  { key: '54', label: 'Екатеринбург' },
-  { key: '55', label: 'Тюмень' },
-  { key: '56', label: 'Челябинск' },
-  { key: '57', label: 'Ханты-Мансийск' },
-  { key: '58', label: 'Салехард' },
-  { key: '59', label: 'Сибирь' },
-  { key: '62', label: 'Красноярск' },
-  { key: '63', label: 'Иркутск' },
-  { key: '64', label: 'Кемерово' },
-  { key: '65', label: 'Новосибирск' },
-  { key: '66', label: 'Омск' },
-  { key: '67', label: 'Томск' },
-  { key: '68', label: 'Чита' },
-  { key: '74', label: 'Якутск' },
-  { key: '75', label: 'Владивосток' },
-  { key: '76', label: 'Хабаровск' },
-  { key: '77', label: 'Благовещенск' },
-  { key: '78', label: 'Петропавловск-Камчатский' },
-  { key: '79', label: 'Магадан' },
-  { key: '80', label: 'Южно-Сахалинск' },
-  { key: '172', label: 'Уфа' },
-  { key: '191', label: 'Брянск' },
-  { key: '192', label: 'Владимир' },
-  { key: '193', label: 'Воронеж' },
-  { key: '194', label: 'Саратов' },
-  { key: '195', label: 'Ульяновск' },
-  { key: '197', label: 'Барнаул' },
-  { key: '198', label: 'Улан-Удэ' },
-  { key: '235', label: 'Магнитогорск' },
-  { key: '236', label: 'Набережные Челны' },
-  { key: '237', label: 'Новокузнецк' },
-  { key: '238', label: 'Новочеркасск' },
-  { key: '239', label: 'Сочи' },
-  { key: '240', label: 'Тольятти' },
-  { key: '959', label: 'Севастополь' },
-  { key: '977', label: 'Крым' },
-  { key: '10646', label: 'Губкин' },
-  { key: '10649', label: 'Старый Оскол' },
-  { key: '10650', label: 'Брянская область' },
-  { key: '10658', label: 'Владимирская область' },
-  { key: '10672', label: 'Воронежская область' },
-  { key: '10687', label: 'Ивановская область' },
-  { key: '10693', label: 'Калужская область' },
-  { key: '10699', label: 'Костромская область' },
-  { key: '10705', label: 'Курская область' },
-  { key: '10712', label: 'Липецкая область' },
-  { key: '10716', label: 'Балашиха' },
-  { key: '10722', label: 'Дубна' },
-  { key: '10819', label: 'Тверская область' },
-  { key: '10841', label: 'Ярославская область' },
-  { key: '10842', label: 'Архангельская область' },
-  { key: '10853', label: 'Вологодская область' },
-  { key: '10857', label: 'Калининградская область' },
-  { key: '10897', label: 'Мурманская область' },
-  { key: '10904', label: 'Новгородская область' },
-  { key: '10926', label: 'Псковская область' },
-  { key: '10933', label: 'Республика Карелия' },
-  { key: '10939', label: 'Республика Коми' },
-  { key: '10946', label: 'Астраханская область' },
-  { key: '10950', label: 'Волгоградская область' },
-  { key: '10995', label: 'Краснодарский край' },
-  { key: '11004', label: 'Республика Адыгея' },
-  { key: '11010', label: 'Республика Дагестан' },
-  { key: '11012', label: 'Республика Ингушетия' },
-  { key: '11013', label: 'Кабардино-Балкарская Республика' },
-  { key: '11020', label: 'Карачаево-Черкесская Республика' },
-  { key: '11021', label: 'Республика Северная Осетия — Алания' },
-  { key: '11024', label: 'Чеченская Республика' },
-  { key: '11029', label: 'Ростовская область' },
-  { key: '11069', label: 'Ставропольский край' },
-  { key: '11070', label: 'Кировская область' },
-  { key: '11077', label: 'Республика Марий Эл' },
-  { key: '11079', label: 'Нижегородская область' },
-  { key: '11084', label: 'Оренбургская область' },
-  { key: '11095', label: 'Пензенская область' },
-  { key: '11108', label: 'Пермский край' },
-  { key: '11111', label: 'Республика Башкортостан' },
-  { key: '11117', label: 'Республика Мордовия' },
-  { key: '11119', label: 'Республика Татарстан' },
-  { key: '11131', label: 'Самарская область' },
-  { key: '11146', label: 'Саратовская область' },
-  { key: '11148', label: 'Удмуртская Республика' },
-  { key: '11153', label: 'Ульяновская область' },
-  { key: '11156', label: 'Чувашская Республика' },
-  { key: '11158', label: 'Курганская область' },
-  { key: '11162', label: 'Свердловская область' },
-  { key: '11176', label: 'Тюменская область' },
-  { key: '11193', label: 'Ханты-Мансийский автономный округ' },
-  { key: '11225', label: 'Челябинская область' },
-  { key: '11232', label: 'Ямало-Ненецкий автономный округ' },
-  { key: '11235', label: 'Алтайский край' },
-  { key: '11266', label: 'Иркутская область' },
-  { key: '11282', label: 'Кемеровская область' },
-  { key: '11309', label: 'Красноярский край' },
-  { key: '11316', label: 'Новосибирская область' },
-  { key: '11318', label: 'Омская область' },
-  { key: '11330', label: 'Республика Бурятия' },
-  { key: '11340', label: 'Республика Хакасия' },
-  { key: '11353', label: 'Томская область' },
-  { key: '11375', label: 'Амурская область' },
-  { key: '11398', label: 'Камчатский край' },
-  { key: '11403', label: 'Магаданская область' },
-  { key: '11409', label: 'Приморский край' },
-  { key: '11443', label: 'Республика Саха (Якутия)' },
-  { key: '11450', label: 'Сахалинская область' },
-  { key: '11457', label: 'Хабаровский край' },
-  { key: '21949', label: 'Забайкальский край' },
-  { key: '10231', label: 'Республика Алтай' },
-  { key: '10233', label: 'Республика Тыва' },
-  { key: '10243', label: 'Еврейская автономная область' },
-  { key: '10251', label: 'Чукотский автономный округ' },
-  { key: '10176', label: 'Ненецкий автономный округ' },
-  { key: '149', label: 'Беларусь' },
-  { key: '159', label: 'Казахстан' },
-  { key: '111', label: 'Европа' },
-  { key: '166', label: 'СНГ' },
-  { key: '183', label: 'Азия' },
-  { key: '318', label: 'Универсальное' },
-  { key: '-1', label: 'Весь мир' },
-  { key: '0', label: 'Без учёта региона' },
-];
+const regionKey = computed(
+  () => Object.keys(regions.value ?? {})[0] ?? 213, // Москва
+);
+const viewingDepthKey = computed(
+  () => Object.keys(viewingDepth.value ?? {})[0] ?? 10,
+);
 
 async function submitForm() {
+  errorMessages.value = [];
+
+  const payload: SemanticsFormData = {
+    reportName: reportName.value,
+    parsePhrases: parsePhrases.value,
+    minFrequency: minFrequency.value,
+    maxFrequency: maxFrequency.value,
+    positivePhrases: positivePhrases.value,
+    negativePhrases: negativePhrases.value,
+    region: Number(regionKey.value),
+    viewingDepth: Number(viewingDepthKey.value),
+    minKeyWeight: minKeyWeight.value,
+    clusterPhrases: clusterPhrases.value,
+    popularSourcePhrasesForms: popularSourcePhrasesForms.value,
+    excludeSourcePhrases: excludeSourcePhrases.value,
+  };
+
   try {
     await semanticsFormSchema.parseAsync({
       webhookUrl: webhookUrl.value,
-      ...formData,
+      ...payload,
     });
   } catch (error: any) {
     errorMessages.value = error.issues.map(
       (issue: { message: string }) => issue.message,
     );
     console.error('Ошибка валидации:', error.issues);
+
+    return;
   }
+
+  isSendingFormData.value = true;
+
+  const { error, data } = await useFetch(webhookUrl.value).post(payload).json();
+
+  if (data.value && data.value.success) {
+    successNotify(data.value.message || 'Данные успешно обработаны');
+  } else if (error.value) {
+    errorNotify(error.value);
+  } else {
+    errorNotify('Неизвестная ошибка, попробуйте позже');
+  }
+
+  isSendingFormData.value = false;
+}
+
+function clearForm() {
+  reportName.value = '';
+  parsePhrases.value = '';
+  minFrequency.value = 0;
+  maxFrequency.value = 999999999;
+  positivePhrases.value = '';
+  negativePhrases.value = '';
+  regions.value = { '213': true };
+  viewingDepth.value = { '10': true };
+  minKeyWeight.value = 2;
+  clusterPhrases.value = false;
+  popularSourcePhrasesForms.value = true;
+  excludeSourcePhrases.value = false;
 }
 </script>

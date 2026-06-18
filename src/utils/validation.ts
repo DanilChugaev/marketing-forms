@@ -21,14 +21,18 @@ export const creativesFormSchema = z.object({
 
 export const semanticsFormSchema = z.object({
   webhookUrl: z.string().url({ message: 'Некорректная ссылка на вебхук' }),
+  reportName: z.string().min(1, { message: 'Введите имя отчета' }),
   parsePhrases: z
     .string()
     .min(1, { message: 'Введите хотя бы одну фразу для парсинга' }),
-  includeMasks: z.enum(['yes', 'no'], {
-    message: 'Выберите, добавлять ли маски в проект',
+  region: z.number({
+    message: 'Выберите регион',
   }),
-  clusterPhrases: z.enum(['yes', 'no'], {
-    message: 'Выберите, кластеризовать ли фразы',
+  viewingDepth: z.number({
+    message: 'Выберите глубину просмотра',
+  }),
+  minKeyWeight: z.number().min(1).max(10, {
+    message: 'Минимальный вес ключа должен быть от 1 до 10',
   }),
 });
 

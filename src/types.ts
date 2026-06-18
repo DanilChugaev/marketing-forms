@@ -1,6 +1,6 @@
-export interface LabelValuePair {
+export interface LabelValuePair<T = string> {
   label: string;
-  value: string;
+  value: T;
 }
 
 export enum SubjectKey {
@@ -55,4 +55,19 @@ export interface StatisticsFormData {
   id: string; // ID тг чата
   ids: string; // ID кампаний
   specialist: string; // Справочник специалиста
+}
+
+export interface SemanticsFormData {
+  reportName: string; // Имя отчета
+  parsePhrases: string; // Фразы для парсинга
+  minFrequency: number; // Минимальная частотность
+  maxFrequency: number; // Максимальная частотность
+  positivePhrases: string; // Фразы которые должны содержать любую из строк
+  negativePhrases: string; // Фразы которые не должны содержать любую из строк
+  region: number; // Регион
+  viewingDepth: number; // Глубина просмотра
+  minKeyWeight: number; // Минимальный вес ключа
+  clusterPhrases: boolean; // Требуется кластеризация фраз
+  popularSourcePhrasesForms: boolean; // Использовать самые популярные формы исходных фраз
+  excludeSourcePhrases: boolean; // Исключить исходные фразы из отчета
 }
